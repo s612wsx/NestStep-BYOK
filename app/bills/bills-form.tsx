@@ -8,6 +8,8 @@ import {
   BILL_INPUT_TYPE_LABEL,
   type BillAnalyzeResponse,
 } from "@/app/lib/bill-analysis-types";
+import { useOpenAiKey, OPENAI_KEY_HEADER } from "@/app/lib/openai-key";
+import { ApiKeyNotice } from "@/components/api-key-notice";
 import { BillAnalysisSections, SECTION_TITLES } from "./analysis-sections";
 
 const inputClass =
@@ -22,6 +24,7 @@ export function BillsForm() {
   const [billType, setBillType] = useState("");
   const [content, setContent] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const { apiKey, hasKey, loaded } = useOpenAiKey();
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -40,6 +43,7 @@ export function BillsForm() {
     try {
       const res = await fetch("/api/bills/analyze", {
         method: "POST",
+        headers: { [OPENAI_KEY_HEADER]: apiKey },
         body: data,
       });
       const json = await res.json();
@@ -192,11 +196,12 @@ export function BillsForm() {
       <div className="pt-1">
         <button
           type="submit"
-          disabled={!canSubmit}
+          disabled={!canSubmit || (loaded && !hasKey)}
           className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-stone-900 px-5 text-sm font-medium text-white transition-colors hover:bg-stone-700 disabled:opacity-60 sm:w-auto dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white"
         >
-          幫我看懂帳單
+          {loaded && !hasKey ? "設定金鑰後才能用" : "幫我看懂帳單"}
         </button>
+        <ApiKeyNotice hasKey={hasKey} loaded={loaded} />
       </div>
     </form>
   );

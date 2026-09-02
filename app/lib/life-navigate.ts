@@ -1,21 +1,11 @@
 import OpenAI from "openai";
+import { openAiClient } from "@/app/lib/openai-client";
 import type {
   LifeGuidance,
   LifeFeatureKey,
 } from "@/app/lib/life-query-types";
 
 const DEFAULT_MODEL = "gpt-5-mini";
-
-let client: OpenAI | null = null;
-
-function getClient(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error("環境變數缺少 OPENAI_API_KEY");
-  }
-  client ??= new OpenAI({ apiKey });
-  return client;
-}
 
 const SYSTEM_PROMPT = `你是 NestStep 的「生活問題導航」助理，服務對象是第一次自己生活、遇到不知道怎麼分類或不知道下一步該怎麼做的生活問題的人。
 
@@ -167,9 +157,10 @@ function normalize(parsed: unknown): LifeNavigateOutput {
 
 /** 把使用者的生活問題（文字 + 選填圖片）交給 OpenAI 做「生活問題導航」*/
 export async function navigateLifeQuery(
+  apiKey: string,
   input: LifeNavigateInput,
 ): Promise<LifeNavigateOutput> {
-  const openai = getClient();
+  const openai = openAiClient(apiKey);
   const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
 
   const lines: string[] = [];

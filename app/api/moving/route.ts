@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectMongo } from "@/app/lib/mongoose";
 import { MovePlanModel } from "@/app/models/MovePlan";
 import { generateMoveChecklist } from "@/app/lib/move-checklist";
+import { apiKeyFromRequest, MissingApiKeyError } from "@/app/lib/openai-client";
 import { serializePlanDetail } from "@/app/lib/move-plan-serialize";
 import { getSessionUser } from "@/app/lib/auth";
 import {
@@ -132,10 +133,21 @@ export async function POST(request: Request) {
   }
   const input = validated.value;
 
+  // BYOK：使用者自己的 OpenAI 金鑰（不記錄、不儲存）
+  let apiKey: string;
+  try {
+    apiKey = apiKeyFromRequest(request);
+  } catch (err) {
+    if (err instanceof MissingApiKeyError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    throw err;
+  }
+
   // 1. AI 依情況產生客製化 Checklist
   let generated;
   try {
-    generated = await generateMoveChecklist(input);
+    generated = await generateMoveChecklist(apiKey, input);
   } catch (err) {
     console.error("[moving POST] AI 產生 Checklist 失敗：", err);
     const message = err instanceof Error ? err.message : "AI 產生失敗";

@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { openAiClient } from "@/app/lib/openai-client";
 import type {
   BillAnalysisResult,
   BillFeeItem,
@@ -7,17 +8,6 @@ import type {
 
 // 可用 .env.local 的 OPENAI_MODEL 覆寫。
 const DEFAULT_MODEL = "gpt-5-mini";
-
-let client: OpenAI | null = null;
-
-function getClient(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error("環境變數缺少 OPENAI_API_KEY");
-  }
-  client ??= new OpenAI({ apiKey });
-  return client;
-}
 
 const SYSTEM_PROMPT = `你是協助「第一次自己生活」的人看懂帳單、理解費用怎麼計算的助理。帳單可能是電費、水費、瓦斯費、社區管理費、網路 / 電信費、維修費或其他費用單。
 
@@ -182,9 +172,10 @@ function normalize(parsed: unknown): BillAnalyzeOutput {
 
 /** 把帳單（PDF 或文字）交給 OpenAI，回傳結構化分析結果 */
 export async function analyzeBill(
+  apiKey: string,
   input: BillAnalyzeInput,
 ): Promise<BillAnalyzeOutput> {
-  const openai = getClient();
+  const openai = openAiClient(apiKey);
   const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
 
   const content: OpenAI.Responses.ResponseInputContent[] = [];

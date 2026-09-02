@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectMongo } from "@/app/lib/mongoose";
 import { BillAnalysisModel } from "@/app/models/BillAnalysis";
 import { analyzeBill } from "@/app/lib/bill-analyze";
+import { apiKeyFromRequest, MissingApiKeyError } from "@/app/lib/openai-client";
 import { getSessionUser } from "@/app/lib/auth";
 import { BILL_TYPES } from "@/app/lib/bill-analysis-types";
 import {
@@ -80,6 +81,17 @@ export async function POST(request: Request) {
   const isImage = Boolean(file && (file.type || "").startsWith("image/"));
   const inputType = file ? (isImage ? "image" : "pdf") : "text";
 
+  // BYOK：使用者自己的 OpenAI 金鑰（不記錄、不儲存）。在上傳 Blob 前先擋，避免孤兒檔。
+  let apiKey: string;
+  try {
+    apiKey = apiKeyFromRequest(request);
+  } catch (err) {
+    if (err instanceof MissingApiKeyError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    throw err;
+  }
+
   // 1. 有 PDF → 先存到 Vercel Blob
   let uploaded: UploadedFile | null = null;
   if (file) {
@@ -95,7 +107,7 @@ export async function POST(request: Request) {
   // 2. 交給 OpenAI 分析
   let analysis;
   try {
-    analysis = await analyzeBill({
+    analysis = await analyzeBill(apiKey, {
       billType,
       content: content || undefined,
       file: uploaded ? { url: uploaded.url, isImage } : null,

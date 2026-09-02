@@ -127,6 +127,14 @@ export function SiteHeader() {
                   ))}
                 </nav>
 
+                <Link
+                  href="/settings"
+                  aria-current={isActive("/settings") ? "page" : undefined}
+                  className={`hidden md:inline-block ${navLinkClass}`}
+                >
+                  設定
+                </Link>
+
                 {authLoaded && (
                   <div className="hidden items-center gap-2 border-l border-stone-200 pl-3 md:flex dark:border-stone-800">
                     {user ? (
@@ -233,6 +241,21 @@ export function SiteHeader() {
                     {f.title}
                   </Link>
                 ))}
+                <Link
+                  href="/settings"
+                  onClick={close}
+                  aria-current={isActive("/settings") ? "page" : undefined}
+                  className={`${mobileItemClass} ${
+                    isActive("/settings")
+                      ? "bg-stone-200/70 font-medium dark:bg-stone-800"
+                      : ""
+                  }`}
+                >
+                  <span aria-hidden className="text-base">
+                    ⚙️
+                  </span>
+                  設定
+                </Link>
               </>
             )}
 

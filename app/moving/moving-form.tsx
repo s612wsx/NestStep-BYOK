@@ -15,6 +15,8 @@ import {
   PURCHASE_NONE,
   type MovePlanDetail,
 } from "@/app/lib/move-plan-types";
+import { useOpenAiKey, OPENAI_KEY_HEADER } from "@/app/lib/openai-key";
+import { ApiKeyNotice } from "@/components/api-key-notice";
 
 const inputClass =
   "w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-[15px] outline-none placeholder:text-stone-400 focus:border-stone-500 focus:ring-2 focus:ring-stone-200 dark:border-stone-700 dark:bg-stone-900 dark:focus:ring-stone-800";
@@ -110,6 +112,7 @@ export function MovingForm() {
   const [moveOutStatus, setMoveOutStatus] = useState("");
   const [purchaseNeeds, setPurchaseNeeds] = useState<string[]>([]);
   const [additionalNotes, setAdditionalNotes] = useState("");
+  const { apiKey, hasKey, loaded } = useOpenAiKey();
 
   const toggleExclusive = (
     setter: (updater: (cur: string[]) => string[]) => void,
@@ -146,7 +149,10 @@ export function MovingForm() {
     try {
       const res = await fetch("/api/moving", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          [OPENAI_KEY_HEADER]: apiKey,
+        },
         body: JSON.stringify({
           moveDate,
           housingType,
@@ -303,11 +309,12 @@ export function MovingForm() {
       <div className="pt-1">
         <button
           type="submit"
-          disabled={!canSubmit}
+          disabled={!canSubmit || (loaded && !hasKey)}
           className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-stone-900 px-5 text-sm font-medium text-white transition-colors hover:bg-stone-700 disabled:opacity-60 sm:w-auto dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white"
         >
-          產生搬家 Checklist
+          {loaded && !hasKey ? "設定金鑰後才能用" : "產生搬家 Checklist"}
         </button>
+        <ApiKeyNotice hasKey={hasKey} loaded={loaded} />
       </div>
     </form>
   );

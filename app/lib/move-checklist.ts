@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { openAiClient } from "@/app/lib/openai-client";
 import {
   PHASE_KEYS,
   type MovePlanInput,
@@ -6,17 +6,6 @@ import {
 } from "@/app/lib/move-plan-types";
 
 const DEFAULT_MODEL = "gpt-5-mini";
-
-let client: OpenAI | null = null;
-
-function getClient(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error("環境變數缺少 OPENAI_API_KEY");
-  }
-  client ??= new OpenAI({ apiKey });
-  return client;
-}
 
 const SYSTEM_PROMPT = `你是協助「第一次自己搬家」的人的助理。請依照使用者的搬家日期與實際情況，產生一份實用、具體、按時間排序的搬家 Checklist。
 
@@ -89,9 +78,10 @@ function describe(input: MovePlanInput): string {
 
 /** 依使用者情況產生客製化搬家 Checklist */
 export async function generateMoveChecklist(
+  apiKey: string,
   input: MovePlanInput,
 ): Promise<GeneratedChecklistItem[]> {
-  const openai = getClient();
+  const openai = openAiClient(apiKey);
   const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
 
   const response = await openai.responses.create({

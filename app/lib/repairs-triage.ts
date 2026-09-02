@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { openAiClient } from "@/app/lib/openai-client";
 import type {
   RepairTriageResult,
   RepairDangerLevel,
@@ -6,17 +7,6 @@ import type {
 
 // 可用 .env.local 的 OPENAI_MODEL 覆寫。
 const DEFAULT_MODEL = "gpt-5-mini";
-
-let client: OpenAI | null = null;
-
-function getClient(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error("環境變數缺少 OPENAI_API_KEY");
-  }
-  client ??= new OpenAI({ apiKey });
-  return client;
-}
 
 const SYSTEM_PROMPT = `你是協助「第一次自己住」的人處理家中突發狀況的助理，任務是「初步分診」。
 
@@ -146,9 +136,10 @@ function normalizeResult(parsed: unknown): RepairTriageResult {
 
 /** 把使用者回報的家中狀況交給 OpenAI 做初步分診，回傳結構化結果 */
 export async function triageRepair(
+  apiKey: string,
   input: RepairTriageInput,
 ): Promise<RepairTriageResult> {
-  const openai = getClient();
+  const openai = openAiClient(apiKey);
   const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
 
   const lines: string[] = [`使用者選的問題類型：${input.category}`];

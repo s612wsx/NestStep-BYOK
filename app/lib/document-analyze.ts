@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { openAiClient } from "@/app/lib/openai-client";
 import type {
   DocumentAnalysisResult,
   DocumentKeyTerm,
@@ -8,17 +9,6 @@ import type {
 
 // 可用 .env.local 的 OPENAI_MODEL 覆寫。
 const DEFAULT_MODEL = "gpt-5-mini";
-
-let client: OpenAI | null = null;
-
-function getClient(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error("環境變數缺少 OPENAI_API_KEY");
-  }
-  client ??= new OpenAI({ apiKey });
-  return client;
-}
 
 const SYSTEM_PROMPT = `你是協助一般人「看懂生活中的文件」的助理。文件可能是租約、電信 / 網路合約、社區管理規約、維修報價單、保固條款或其他生活文件。
 
@@ -166,9 +156,10 @@ function normalize(parsed: unknown): DocumentAnalyzeOutput {
 
 /** 把文件（PDF 或文字）交給 OpenAI，回傳結構化分析結果 */
 export async function analyzeDocument(
+  apiKey: string,
   input: DocumentAnalyzeInput,
 ): Promise<DocumentAnalyzeOutput> {
-  const openai = getClient();
+  const openai = openAiClient(apiKey);
   const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
 
   const content: OpenAI.Responses.ResponseInputContent[] = [];

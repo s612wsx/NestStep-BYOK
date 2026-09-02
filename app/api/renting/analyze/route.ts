@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectMongo } from "@/app/lib/mongoose";
 import { RentingAnalysisModel } from "@/app/models/RentingAnalysis";
 import { analyzeRentingListing } from "@/app/lib/openai";
+import { apiKeyFromRequest, MissingApiKeyError } from "@/app/lib/openai-client";
 import { getSessionUser } from "@/app/lib/auth";
 import {
   assertUploadable,
@@ -72,6 +73,17 @@ export async function POST(request: Request) {
     }
   }
 
+  // BYOK：使用者自己的 OpenAI 金鑰（不記錄、不儲存）。在上傳 Blob 前先擋，避免孤兒檔。
+  let apiKey: string;
+  try {
+    apiKey = apiKeyFromRequest(request);
+  } catch (err) {
+    if (err instanceof MissingApiKeyError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    throw err;
+  }
+
   const resolvedTitle =
     title || `未命名物件（${new Date().toLocaleDateString("zh-TW")}）`;
   const inputType = file ? "file" : "text";
@@ -94,7 +106,7 @@ export async function POST(request: Request) {
   // 2. 執行 AI 分析
   let analysisResult;
   try {
-    analysisResult = await analyzeRentingListing({
+    analysisResult = await analyzeRentingListing(apiKey, {
       content: content || undefined,
       title: resolvedTitle,
       sourceUrl: sourceUrl || undefined,

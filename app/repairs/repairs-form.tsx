@@ -4,6 +4,8 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import type { RepairTriageResponse } from "@/app/lib/repairs-types";
+import { useOpenAiKey, OPENAI_KEY_HEADER } from "@/app/lib/openai-key";
+import { ApiKeyNotice } from "@/components/api-key-notice";
 import { TriageSections, SECTION_TITLES } from "./triage-sections";
 
 const inputClass =
@@ -32,6 +34,7 @@ export function RepairsForm() {
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const { apiKey, hasKey, loaded } = useOpenAiKey();
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -47,6 +50,7 @@ export function RepairsForm() {
     try {
       const res = await fetch("/api/repairs/triage", {
         method: "POST",
+        headers: { [OPENAI_KEY_HEADER]: apiKey },
         body: data,
       });
       const json = await res.json();
@@ -181,11 +185,12 @@ export function RepairsForm() {
       <div className="pt-1">
         <button
           type="submit"
-          disabled={!canSubmit}
+          disabled={!canSubmit || (loaded && !hasKey)}
           className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-stone-900 px-5 text-sm font-medium text-white transition-colors hover:bg-stone-700 disabled:opacity-60 sm:w-auto dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white"
         >
-          送出並分診
+          {loaded && !hasKey ? "設定金鑰後才能用" : "送出並分診"}
         </button>
+        <ApiKeyNotice hasKey={hasKey} loaded={loaded} />
       </div>
     </form>
   );

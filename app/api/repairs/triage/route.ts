@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectMongo } from "@/app/lib/mongoose";
 import { RepairEventModel } from "@/app/models/RepairEvent";
 import { triageRepair } from "@/app/lib/repairs-triage";
+import { apiKeyFromRequest, MissingApiKeyError } from "@/app/lib/openai-client";
 import { getSessionUser } from "@/app/lib/auth";
 import {
   assertRepairImage,
@@ -69,6 +70,17 @@ export async function POST(request: Request) {
     }
   }
 
+  // BYOK：使用者自己的 OpenAI 金鑰（不記錄、不儲存）。在上傳 Blob 前先擋，避免孤兒檔。
+  let apiKey: string;
+  try {
+    apiKey = apiKeyFromRequest(request);
+  } catch (err) {
+    if (err instanceof MissingApiKeyError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    throw err;
+  }
+
   // 1. 有照片 → 先存到 Vercel Blob（AI 直接讀這個 URL）
   let uploaded: UploadedFile | null = null;
   if (image) {
@@ -84,7 +96,7 @@ export async function POST(request: Request) {
   // 2. AI 初步分診
   let triage;
   try {
-    triage = await triageRepair({
+    triage = await triageRepair(apiKey, {
       category,
       description: description || undefined,
       imageUrl: uploaded?.url ?? null,

@@ -1,19 +1,9 @@
 import OpenAI from "openai";
+import { openAiClient } from "@/app/lib/openai-client";
 import type { RentingAnalysisResult } from "@/app/lib/renting-analysis-types";
 
 // 可用 .env.local 的 OPENAI_MODEL 覆寫。
 const DEFAULT_MODEL = "gpt-5-mini";
-
-let client: OpenAI | null = null;
-
-function getClient(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error("環境變數缺少 OPENAI_API_KEY");
-  }
-  client ??= new OpenAI({ apiKey });
-  return client;
-}
 
 const SYSTEM_PROMPT = `你是協助「第一次自己租屋」的人看懂租屋資訊的助理。
 使用者會提供租屋廣告、建案文案、從文件取得的文字，或直接上傳 PDF / 圖片（例如廣告截圖、合約、平面圖）。
@@ -147,9 +137,10 @@ function normalizeResult(parsed: unknown): RentingAnalysisResult {
 
 /** 把使用者提供的租屋資訊（文字 / PDF / 圖片）交給 OpenAI，回傳結構化的分析結果 */
 export async function analyzeRentingListing(
+  apiKey: string,
   input: RentingAnalyzeInput,
 ): Promise<RentingAnalysisResult> {
-  const openai = getClient();
+  const openai = openAiClient(apiKey);
   const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
   const { file } = input;
 
