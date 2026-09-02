@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import type { RentingAnalyzeResponse } from "@/app/lib/renting-analysis-types";
 import { useOpenAiKey, OPENAI_KEY_HEADER } from "@/app/lib/openai-key";
+import { useAuthUser } from "@/app/lib/use-auth-user";
 import { ApiKeyNotice } from "@/components/api-key-notice";
 import { AnalysisSections, SECTION_TITLES } from "./analysis-sections";
 
@@ -25,6 +26,8 @@ export function RentingForm() {
   const [content, setContent] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const { apiKey, hasKey, loaded } = useOpenAiKey();
+  const { user, authLoaded } = useAuthUser();
+  const needLogin = authLoaded && !user;
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -187,12 +190,20 @@ export function RentingForm() {
       <div className="pt-1">
         <button
           type="submit"
-          disabled={(content.trim().length < 10 && !file) || (loaded && !hasKey)}
+          disabled={
+            (content.trim().length < 10 && !file) ||
+            (loaded && !hasKey) ||
+            needLogin
+          }
           className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-stone-900 px-5 text-sm font-medium text-white transition-colors hover:bg-stone-700 disabled:opacity-60 sm:w-auto dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white"
         >
-          {loaded && !hasKey ? "設定金鑰後才能用" : "送出並分析"}
+          {needLogin
+            ? "請先登入或註冊"
+            : loaded && !hasKey
+              ? "設定金鑰後才能用"
+              : "送出並分析"}
         </button>
-        <ApiKeyNotice hasKey={hasKey} loaded={loaded} />
+        <ApiKeyNotice hasKey={hasKey} loaded={loaded} needLogin={needLogin} />
       </div>
     </form>
   );

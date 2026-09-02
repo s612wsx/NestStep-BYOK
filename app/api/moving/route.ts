@@ -115,9 +115,13 @@ function validateInput(body: unknown): ValidateOk | ValidateErr {
 
 /** 建立搬家計畫（Create）*/
 export async function POST(request: Request) {
+  // 登入牆：搬家計畫會存進使用者帳號，未登入不給用
   const session = await getSessionUser();
   if (!session) {
-    return NextResponse.json({ error: "請先登入" }, { status: 401 });
+    return NextResponse.json(
+      { error: "請先登入或註冊，才能使用這項功能" },
+      { status: 401 },
+    );
   }
 
   let body: unknown;

@@ -15,9 +15,6 @@ import {
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-// 未登入時仍可分診，事件先記在 anonymous 名下
-const ANONYMOUS_USER_ID = "anonymous";
-
 /** rollback：把剛上傳的照片刪掉，避免孤兒檔（失敗只記 log）*/
 async function rollbackPhoto(uploaded: UploadedFile | null) {
   if (!uploaded) return;
@@ -34,6 +31,15 @@ async function rollbackPhoto(uploaded: UploadedFile | null) {
 }
 
 export async function POST(request: Request) {
+  // 登入牆：分診結果會存進使用者帳號，未登入不給用
+  const session = await getSessionUser();
+  if (!session) {
+    return NextResponse.json(
+      { error: "請先登入或註冊，才能使用這項功能" },
+      { status: 401 },
+    );
+  }
+
   let form: FormData;
   try {
     form = await request.formData();
@@ -109,7 +115,6 @@ export async function POST(request: Request) {
   }
 
   // 3. 分診成功 → 自動建立一筆事件紀錄（不需要使用者按儲存）
-  const session = await getSessionUser();
   const photoUrl = uploaded?.url ?? "";
   let saved = false;
   let id: string | null = null;
@@ -117,7 +122,7 @@ export async function POST(request: Request) {
   try {
     await connectMongo();
     const doc = await RepairEventModel.create({
-      userId: session?.id ?? ANONYMOUS_USER_ID,
+      userId: session.id,
       category,
       description,
       aiTriageResult: triage,

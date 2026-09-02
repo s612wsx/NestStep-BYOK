@@ -9,6 +9,7 @@ import {
   type BillAnalyzeResponse,
 } from "@/app/lib/bill-analysis-types";
 import { useOpenAiKey, OPENAI_KEY_HEADER } from "@/app/lib/openai-key";
+import { useAuthUser } from "@/app/lib/use-auth-user";
 import { ApiKeyNotice } from "@/components/api-key-notice";
 import { BillAnalysisSections, SECTION_TITLES } from "./analysis-sections";
 
@@ -25,6 +26,8 @@ export function BillsForm() {
   const [content, setContent] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const { apiKey, hasKey, loaded } = useOpenAiKey();
+  const { user, authLoaded } = useAuthUser();
+  const needLogin = authLoaded && !user;
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -196,12 +199,16 @@ export function BillsForm() {
       <div className="pt-1">
         <button
           type="submit"
-          disabled={!canSubmit || (loaded && !hasKey)}
+          disabled={!canSubmit || (loaded && !hasKey) || needLogin}
           className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-stone-900 px-5 text-sm font-medium text-white transition-colors hover:bg-stone-700 disabled:opacity-60 sm:w-auto dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white"
         >
-          {loaded && !hasKey ? "設定金鑰後才能用" : "幫我看懂帳單"}
+          {needLogin
+            ? "請先登入或註冊"
+            : loaded && !hasKey
+              ? "設定金鑰後才能用"
+              : "幫我看懂帳單"}
         </button>
-        <ApiKeyNotice hasKey={hasKey} loaded={loaded} />
+        <ApiKeyNotice hasKey={hasKey} loaded={loaded} needLogin={needLogin} />
       </div>
     </form>
   );

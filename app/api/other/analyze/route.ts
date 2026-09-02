@@ -17,8 +17,6 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const MIN_DESCRIPTION_LENGTH = 5;
-// 未登入時仍可使用，只是不會出現在任何人的歷史紀錄
-const ANONYMOUS_USER_ID = "anonymous";
 
 async function rollbackBlob(uploaded: UploadedFile | null) {
   if (!uploaded) return;
@@ -35,6 +33,15 @@ async function rollbackBlob(uploaded: UploadedFile | null) {
 }
 
 export async function POST(request: Request) {
+  // 登入牆：導航結果會存進使用者帳號，未登入不給用
+  const session = await getSessionUser();
+  if (!session) {
+    return NextResponse.json(
+      { error: "請先登入或註冊，才能使用這項功能" },
+      { status: 401 },
+    );
+  }
+
   let form: FormData;
   try {
     form = await request.formData();
@@ -113,12 +120,11 @@ export async function POST(request: Request) {
   }
 
   // 3. 建立一筆生活求助紀錄
-  const session = await getSessionUser();
   let doc;
   try {
     await connectMongo();
     doc = await LifeQueryModel.create({
-      userId: session?.id ?? ANONYMOUS_USER_ID,
+      userId: session.id,
       description,
       quickPrompt,
       imageUrl: uploaded?.url ?? "",

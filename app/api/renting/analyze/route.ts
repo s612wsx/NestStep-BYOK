@@ -17,9 +17,6 @@ export const maxDuration = 60;
 
 const MIN_CONTENT_LENGTH = 10;
 
-// 未登入時仍可分析，只是不會出現在任何人的歷史紀錄
-const ANONYMOUS_USER_ID = "anonymous";
-
 /** rollback：把已上傳的 Blob 刪掉，避免孤兒檔（失敗只記 log，不影響回應） */
 async function rollbackBlob(uploaded: UploadedFile | null) {
   if (!uploaded) return;
@@ -36,6 +33,15 @@ async function rollbackBlob(uploaded: UploadedFile | null) {
 }
 
 export async function POST(request: Request) {
+  // 登入牆：分析結果會存進使用者帳號，未登入不給用
+  const session = await getSessionUser();
+  if (!session) {
+    return NextResponse.json(
+      { error: "請先登入或註冊，才能使用這項功能" },
+      { status: 401 },
+    );
+  }
+
   let form: FormData;
   try {
     form = await request.formData();
@@ -126,12 +132,11 @@ export async function POST(request: Request) {
   }
 
   // 3. 原始內容 + Blob 檔案資訊 + AI 結果 + 使用者資訊 一起寫進 MongoDB
-  const session = await getSessionUser();
   let doc;
   try {
     await connectMongo();
     doc = await RentingAnalysisModel.create({
-      userId: session?.id ?? ANONYMOUS_USER_ID,
+      userId: session.id,
       title: resolvedTitle,
       inputType,
       originalText,

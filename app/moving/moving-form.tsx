@@ -16,6 +16,7 @@ import {
   type MovePlanDetail,
 } from "@/app/lib/move-plan-types";
 import { useOpenAiKey, OPENAI_KEY_HEADER } from "@/app/lib/openai-key";
+import { useAuthUser } from "@/app/lib/use-auth-user";
 import { ApiKeyNotice } from "@/components/api-key-notice";
 
 const inputClass =
@@ -113,6 +114,8 @@ export function MovingForm() {
   const [purchaseNeeds, setPurchaseNeeds] = useState<string[]>([]);
   const [additionalNotes, setAdditionalNotes] = useState("");
   const { apiKey, hasKey, loaded } = useOpenAiKey();
+  const { user, authLoaded } = useAuthUser();
+  const needLogin = authLoaded && !user;
 
   const toggleExclusive = (
     setter: (updater: (cur: string[]) => string[]) => void,
@@ -309,12 +312,16 @@ export function MovingForm() {
       <div className="pt-1">
         <button
           type="submit"
-          disabled={!canSubmit || (loaded && !hasKey)}
+          disabled={!canSubmit || (loaded && !hasKey) || needLogin}
           className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-stone-900 px-5 text-sm font-medium text-white transition-colors hover:bg-stone-700 disabled:opacity-60 sm:w-auto dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white"
         >
-          {loaded && !hasKey ? "設定金鑰後才能用" : "產生搬家 Checklist"}
+          {needLogin
+            ? "請先登入或註冊"
+            : loaded && !hasKey
+              ? "設定金鑰後才能用"
+              : "產生搬家 Checklist"}
         </button>
-        <ApiKeyNotice hasKey={hasKey} loaded={loaded} />
+        <ApiKeyNotice hasKey={hasKey} loaded={loaded} needLogin={needLogin} />
       </div>
     </form>
   );
