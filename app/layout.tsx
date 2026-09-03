@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { THEME_INIT_SCRIPT } from "@/app/lib/theme";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,9 +28,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="zh-Hant-TW"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        {/* hydrate 前先套用存好的主題偏好，避免閃一下白／黑 */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <SiteHeader />
         <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-8 sm:py-12">
           {children}

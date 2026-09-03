@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { features } from "@/lib/features";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type AuthUser = { id: string; username: string; email: string };
 
@@ -237,6 +238,8 @@ export function SiteHeader() {
                 )}
               </>
             )}
+
+            <ThemeToggle />
 
             <button
               type="button"

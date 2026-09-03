@@ -1,8 +1,28 @@
 @import "tailwindcss";
 
+/* 深色模式三態（由 <html data-theme> 決定）：
+   - data-theme="light"：永遠淺色，忽略系統設定
+   - data-theme="dark" ：永遠深色，忽略系統設定
+   - data-theme="system" 或未設定：跟隨作業系統的 prefers-color-scheme
+   下面覆寫 Tailwind 的 `dark:` variant，讓它同時吃「手動深色」和「系統深色」。*/
+@custom-variant dark {
+  &:where(:root[data-theme="dark"], :root[data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(
+        :root:not([data-theme="light"]),
+        :root:not([data-theme="light"]) *
+      ) {
+      @slot;
+    }
+  }
+}
+
 :root {
   --background: #fafaf9;
   --foreground: #1c1917;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -12,11 +32,27 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* 跟隨系統：作業系統為深色，且沒有手動選淺色時，套用深色 token */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --background: #0c0a09;
     --foreground: #f5f5f4;
+    color-scheme: dark;
   }
+}
+
+/* 手動選深色：不管系統設定，一律深色 */
+:root[data-theme="dark"] {
+  --background: #0c0a09;
+  --foreground: #f5f5f4;
+  color-scheme: dark;
+}
+
+/* 手動選淺色：不管系統設定，一律淺色 */
+:root[data-theme="light"] {
+  --background: #fafaf9;
+  --foreground: #1c1917;
+  color-scheme: light;
 }
 
 body {
