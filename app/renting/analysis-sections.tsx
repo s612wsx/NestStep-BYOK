@@ -3,7 +3,7 @@ import type { RentingAnalysisResult } from "@/app/lib/renting-analysis-types";
 
 export const SECTION_TITLES = [
   "已明確提供的資訊",
-  "沒說清楚 / 模糊的地方",
+  "可能沒說清楚的地方",
   "建議核實的資訊",
   "建議進一步詢問的問題",
 ] as const;
@@ -138,7 +138,7 @@ export function AnalysisSections({ result }: { result: RentingAnalysisResult }) 
       </Section>
 
       <p className="text-xs leading-relaxed text-stone-500">
-        以上是 AI 依你提供的內容做的客觀整理，不是對物件好壞、安全與否的判斷，也不是租不租的建議。實際情況仍以正式文件與雙方確認為準。
+        以上是 AI 依你提供的內容做的整理，可能有誤解或遺漏，不是對物件好壞、安全與否的判斷，也不是租不租的建議。適合用來提醒自己還要確認什麼，不適合當成房東或仲介有問題的證據或談判依據；實際情況仍以正式文件與雙方確認為準。
       </p>
     </div>
   );
