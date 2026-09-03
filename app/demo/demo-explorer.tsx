@@ -187,37 +187,46 @@ export function DemoExplorer({ nodes, meta, callouts, initialFeature }: Props) {
         </div>
 
         {current ? (
-          <div className="mt-2.5 space-y-2">
+          <div className="mt-2.5 space-y-2.5">
             <div className="flex items-start gap-2 text-[15px] leading-relaxed">
               <span className="mt-0.5 shrink-0 font-semibold text-amber-700 dark:text-amber-400">
                 {current.n}.
               </span>
               <p className="min-w-0 flex-1">{current.label}</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 border-t border-stone-200 pt-2.5 dark:border-stone-800">
               <button
                 type="button"
                 onClick={() => setStep((s) => Math.max(0, (s ?? 0) - 1))}
                 disabled={step === 0}
-                className="rounded-md border border-stone-300 px-2.5 py-1 text-xs transition-colors hover:bg-stone-100 disabled:opacity-40 disabled:hover:bg-transparent dark:border-stone-700 dark:hover:bg-stone-800 dark:disabled:hover:bg-transparent"
+                className="inline-flex h-8 items-center rounded-md border border-stone-300 px-3 text-sm transition-colors hover:bg-stone-100 disabled:opacity-40 disabled:hover:bg-transparent dark:border-stone-700 dark:hover:bg-stone-800 dark:disabled:hover:bg-transparent"
               >
                 ← 上一個
               </button>
-              <button
-                type="button"
-                onClick={() =>
-                  setStep((s) => Math.min(list.length - 1, (s ?? 0) + 1))
-                }
-                disabled={step === list.length - 1}
-                className="rounded-md border border-stone-300 px-2.5 py-1 text-xs transition-colors hover:bg-stone-100 disabled:opacity-40 disabled:hover:bg-transparent dark:border-stone-700 dark:hover:bg-stone-800 dark:disabled:hover:bg-transparent"
-              >
-                下一個 →
-              </button>
-              <span className="ml-auto text-xs tabular-nums text-stone-400">
+              {step === list.length - 1 ? (
+                <button
+                  type="button"
+                  onClick={() => setStep(null)}
+                  className="inline-flex h-8 items-center rounded-md bg-amber-600 px-3.5 text-sm font-medium text-white transition-colors hover:bg-amber-700"
+                >
+                  完成 ✓
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setStep((s) => Math.min(list.length - 1, (s ?? 0) + 1))
+                  }
+                  className="inline-flex h-8 items-center rounded-md bg-amber-600 px-3.5 text-sm font-medium text-white transition-colors hover:bg-amber-700"
+                >
+                  下一個 →
+                </button>
+              )}
+              <span className="ml-auto self-center text-xs tabular-nums text-stone-400">
                 {(step ?? 0) + 1} / {list.length}
               </span>
             </div>
-            <p className="hidden text-[11px] text-stone-400 sm:block">
+            <p className="hidden text-xs text-stone-400 sm:block">
               也可以用鍵盤 ← → 切換、Esc 收起
             </p>
           </div>
