@@ -329,6 +329,9 @@ export const demoMeta: Record<FeatureSlug, DemoMeta> = {
   },
   documents: { sampleTitle: "範例：住宅租賃契約書", note: "上傳 PDF 後的白話整理" },
   bills: { sampleTitle: "範例：台電電費通知單", note: "上傳帳單後的費用拆解" },
-  moving: { sampleTitle: "範例：2026/10/15 搬家", note: "填完搬家情況後產生的客製清單" },
+  moving: {
+    sampleTitle: "範例：2026/10/15 搬家",
+    note: "以下只是其中一種可能；實際清單會依你填的搬家日期與情況產生，項目和數量都會不一樣",
+  },
   other: { sampleTitle: "範例：天花板滲水，不知道該找誰", note: "描述問題後的初步導航" },
 };
