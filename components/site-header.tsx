@@ -163,10 +163,13 @@ export function SiteHeader() {
                     </Link>
                   ))}
                 </nav>
-                {demoChip}
-                <Link href="/start" className={primaryClass}>
-                  開始使用
-                </Link>
+                {/* 手機上收進「選單」裡，避免 header 擠成一團 */}
+                <span className="hidden items-center gap-3 md:flex">
+                  {demoChip}
+                  <Link href="/start" className={primaryClass}>
+                    開始使用
+                  </Link>
+                </span>
                 {authLoaded && user && (
                   <div className="hidden items-center gap-2 border-l border-stone-200 pl-3 md:flex dark:border-stone-800">
                     <span className="text-sm font-medium">@{user.username}</span>
@@ -246,7 +249,7 @@ export function SiteHeader() {
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls="site-menu"
-              className="inline-flex items-center gap-1.5 rounded-md border border-stone-300 px-2.5 py-1.5 text-sm md:hidden dark:border-stone-700"
+              className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-stone-300 px-2.5 py-1.5 text-sm md:hidden dark:border-stone-700"
             >
               <span aria-hidden>{open ? "✕" : "☰"}</span>
               選單
