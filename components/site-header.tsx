@@ -53,6 +53,25 @@ export function SiteHeader() {
 
   const close = () => setOpen(false);
 
+  const onDemo = pathname.startsWith("/demo");
+
+  // 範例入口：用 amber 底色的小膠囊，在一片灰階導覽裡一眼就看得到，
+  // 但形狀 / 字級都跟其他項目一致，不破壞整體。
+  const demoChip = (
+    <Link
+      href="/demo"
+      aria-label="看功能範例"
+      aria-current={onDemo ? "page" : undefined}
+      className={`inline-flex shrink-0 items-center rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors ${
+        onDemo
+          ? "bg-amber-600 text-white"
+          : "bg-amber-600/10 text-amber-700 hover:bg-amber-600/20 dark:text-amber-400 dark:hover:bg-amber-600/25"
+      }`}
+    >
+      範例
+    </Link>
+  );
+
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
@@ -92,6 +111,7 @@ export function SiteHeader() {
                     </Link>
                   ))}
                 </nav>
+                {demoChip}
                 <Link href="/start" className={primaryClass}>
                   開始使用
                 </Link>
@@ -134,6 +154,8 @@ export function SiteHeader() {
                 >
                   設定
                 </Link>
+
+                <span className="hidden md:inline-flex">{demoChip}</span>
 
                 {authLoaded && (
                   <div className="hidden items-center gap-2 border-l border-stone-200 pl-3 md:flex dark:border-stone-800">
@@ -195,6 +217,19 @@ export function SiteHeader() {
                   </span>
                   開始使用 NestStep
                 </Link>
+                <Link
+                  href="/demo"
+                  onClick={close}
+                  aria-current={onDemo ? "page" : undefined}
+                  className={`${mobileItemClass} font-medium text-amber-700 dark:text-amber-400 ${
+                    onDemo ? "bg-amber-600/10" : ""
+                  }`}
+                >
+                  <span aria-hidden className="text-base">
+                    🔍
+                  </span>
+                  看功能範例
+                </Link>
                 {LANDING_NAV.map((n) => (
                   <Link
                     key={n.href}
@@ -222,6 +257,19 @@ export function SiteHeader() {
                     🧭
                   </span>
                   功能首頁
+                </Link>
+                <Link
+                  href="/demo"
+                  onClick={close}
+                  aria-current={onDemo ? "page" : undefined}
+                  className={`${mobileItemClass} font-medium text-amber-700 dark:text-amber-400 ${
+                    onDemo ? "bg-amber-600/10" : ""
+                  }`}
+                >
+                  <span aria-hidden className="text-base">
+                    🔍
+                  </span>
+                  看功能範例
                 </Link>
                 {features.map((f) => (
                   <Link
