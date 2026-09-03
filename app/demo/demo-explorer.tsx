@@ -92,6 +92,24 @@ export function DemoExplorer({ nodes, meta, callouts, initialFeature }: Props) {
     return () => resetBlocks(blocks);
   }, [current, active]);
 
+  // 導覽進行中時，用鍵盤 ← → 切換、Esc 收起
+  useEffect(() => {
+    if (step == null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        setStep((s) => Math.min(list.length - 1, (s ?? 0) + 1));
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        setStep((s) => Math.max(0, (s ?? 0) - 1));
+      } else if (e.key === "Escape") {
+        setStep(null);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [step, list.length]);
+
   return (
     <div>
       {/* 功能切換 */}
@@ -134,8 +152,8 @@ export function DemoExplorer({ nodes, meta, callouts, initialFeature }: Props) {
         </div>
       </div>
 
-      {/* 重點導覽 */}
-      <div className="mt-5 rounded-lg border border-stone-200 bg-stone-50 p-3 dark:border-stone-800 dark:bg-stone-900/40">
+      {/* 重點導覽（捲動時固定在頂端，數字與上一個 / 下一個永遠點得到）*/}
+      <div className="sticky top-14 z-10 mt-5 rounded-lg border border-stone-200 bg-stone-50/95 p-3 shadow-sm backdrop-blur-sm dark:border-stone-800 dark:bg-stone-950/90">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-medium text-stone-500">重點導覽</span>
           {list.map((c, i) => {
@@ -169,24 +187,43 @@ export function DemoExplorer({ nodes, meta, callouts, initialFeature }: Props) {
         </div>
 
         {current ? (
-          <div className="mt-2.5 flex items-start gap-2 text-[15px] leading-relaxed">
-            <span className="mt-0.5 shrink-0 font-semibold text-amber-700 dark:text-amber-400">
-              {current.n}.
-            </span>
-            <p className="min-w-0 flex-1">{current.label}</p>
-            {step != null && step < list.length - 1 && (
+          <div className="mt-2.5 space-y-2">
+            <div className="flex items-start gap-2 text-[15px] leading-relaxed">
+              <span className="mt-0.5 shrink-0 font-semibold text-amber-700 dark:text-amber-400">
+                {current.n}.
+              </span>
+              <p className="min-w-0 flex-1">{current.label}</p>
+            </div>
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setStep(step + 1)}
-                className="shrink-0 self-center rounded-md border border-stone-300 px-2.5 py-1 text-xs transition-colors hover:bg-stone-100 dark:border-stone-700 dark:hover:bg-stone-800"
+                onClick={() => setStep((s) => Math.max(0, (s ?? 0) - 1))}
+                disabled={step === 0}
+                className="rounded-md border border-stone-300 px-2.5 py-1 text-xs transition-colors hover:bg-stone-100 disabled:opacity-40 disabled:hover:bg-transparent dark:border-stone-700 dark:hover:bg-stone-800 dark:disabled:hover:bg-transparent"
+              >
+                ← 上一個
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setStep((s) => Math.min(list.length - 1, (s ?? 0) + 1))
+                }
+                disabled={step === list.length - 1}
+                className="rounded-md border border-stone-300 px-2.5 py-1 text-xs transition-colors hover:bg-stone-100 disabled:opacity-40 disabled:hover:bg-transparent dark:border-stone-700 dark:hover:bg-stone-800 dark:disabled:hover:bg-transparent"
               >
                 下一個 →
               </button>
-            )}
+              <span className="ml-auto text-xs tabular-nums text-stone-400">
+                {(step ?? 0) + 1} / {list.length}
+              </span>
+            </div>
+            <p className="hidden text-[11px] text-stone-400 sm:block">
+              也可以用鍵盤 ← → 切換、Esc 收起
+            </p>
           </div>
         ) : (
           <p className="mt-2 text-xs text-stone-500">
-            點上面的數字，看這個功能各區塊在幫你做什麼。
+            點上面的數字，看這個功能各區塊在幫你做什麼；或按第一個數字，用「上一個 / 下一個」逐段看。
           </p>
         )}
       </div>
