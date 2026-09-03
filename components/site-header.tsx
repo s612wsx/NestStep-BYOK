@@ -91,16 +91,17 @@ export function SiteHeader() {
             href="/"
             onClick={close}
             aria-label="回到 NestStep 首頁"
-            className="group flex shrink-0 items-center gap-2 leading-none"
+            className="group flex shrink-0 items-center gap-2.5 leading-none"
           >
-            {/* 小鳥巢：單線織紋 + amber 蛋，呼應「Nest」，只用一個既有的強調色 */}
+            {/* 小鳥巢：單線織紋 + 溫和的褐色蛋，呼應「Nest」。overflow-visible
+                讓蛋在 hover 浮起時不會被裁掉。 */}
             <svg
               viewBox="0 0 24 24"
-              width="20"
-              height="20"
+              width="26"
+              height="26"
               fill="none"
               aria-hidden="true"
-              className="shrink-0 text-stone-800 dark:text-stone-200"
+              className="shrink-0 overflow-visible text-stone-800 dark:text-stone-200"
             >
               <path
                 d="M4 10.6 7 9.5M20 10.6 17 9.5"
@@ -111,10 +112,14 @@ export function SiteHeader() {
               />
               <ellipse
                 cx="12"
-                cy="10"
-                rx="2.5"
-                ry="2.9"
-                className="fill-amber-600 transition-transform duration-200 group-hover:-translate-y-px"
+                cy="10.6"
+                rx="2.7"
+                ry="3.1"
+                fill="#bd8b60"
+                stroke="currentColor"
+                strokeWidth="0.9"
+                strokeOpacity="0.35"
+                className="transition-transform duration-200 group-hover:-translate-y-1"
               />
               <path
                 d="M3.6 11c0 5.4 3.9 8.5 8.4 8.5S20.4 16.4 20.4 11"
