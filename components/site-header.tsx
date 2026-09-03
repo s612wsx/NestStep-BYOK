@@ -91,13 +91,59 @@ export function SiteHeader() {
             href="/"
             onClick={close}
             aria-label="回到 NestStep 首頁"
-            className="shrink-0 leading-none"
+            className="group flex shrink-0 items-center gap-2 leading-none"
           >
-            <span className="block text-lg font-semibold tracking-tight">
-              NestStep
-            </span>
-            <span className="mt-0.5 block text-[11px] font-medium text-stone-500 dark:text-stone-400">
-              離家使用說明書
+            {/* 小鳥巢：單線織紋 + amber 蛋，呼應「Nest」，只用一個既有的強調色 */}
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              aria-hidden="true"
+              className="shrink-0 text-stone-800 dark:text-stone-200"
+            >
+              <path
+                d="M4 10.6 7 9.5M20 10.6 17 9.5"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                opacity="0.5"
+              />
+              <ellipse
+                cx="12"
+                cy="10"
+                rx="2.5"
+                ry="2.9"
+                className="fill-amber-600 transition-transform duration-200 group-hover:-translate-y-px"
+              />
+              <path
+                d="M3.6 11c0 5.4 3.9 8.5 8.4 8.5S20.4 16.4 20.4 11"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+              />
+              <path
+                d="M6.1 12c.5 3.7 3 5.6 5.9 5.6S17.4 15.7 17.9 12"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                opacity="0.6"
+              />
+              <path
+                d="M8.4 12.6c.5 2.1 2 3.2 3.6 3.2s3.1-1.1 3.6-3.2"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                opacity="0.4"
+              />
+            </svg>
+            <span className="block">
+              <span className="block text-lg font-semibold tracking-tight">
+                NestStep
+              </span>
+              <span className="mt-0.5 block text-[11px] font-medium text-stone-500 dark:text-stone-400">
+                離家使用說明書
+              </span>
             </span>
           </Link>
 
