@@ -4,15 +4,17 @@ import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { features, type FeatureSlug } from "@/lib/features";
 import { AnalysisSections } from "@/app/renting/analysis-sections";
-import { TriageSections } from "@/app/repairs/triage-sections";
 import { BillAnalysisSections } from "@/app/bills/analysis-sections";
 import { DocumentAnalysisSections } from "@/app/documents/analysis-sections";
 import { GuidanceSections } from "@/app/other/guidance-sections";
 import { StaticChecklist } from "./static-checklist";
+import { RepairsDemo } from "./repairs-demo";
 import { DemoExplorer } from "./demo-explorer";
 import {
   rentingSample,
   repairsSample,
+  repairsEventDemo,
+  repairsFollowUpDemo,
   billsSample,
   documentsSample,
   otherSample,
@@ -27,7 +29,14 @@ export const metadata: Metadata = { title: "功能範例" };
 // 範例畫面才會跟真的使用結果完全一致。
 const nodes: Record<FeatureSlug, ReactNode> = {
   renting: <AnalysisSections result={rentingSample} />,
-  repairs: <TriageSections result={repairsSample} />,
+  repairs: (
+    <RepairsDemo
+      category={repairsEventDemo.category}
+      createdAtLabel={repairsEventDemo.createdAtLabel}
+      triage={repairsSample}
+      followUp={repairsFollowUpDemo}
+    />
+  ),
   documents: <DocumentAnalysisSections result={documentsSample} />,
   bills: <BillAnalysisSections result={billsSample} />,
   moving: <StaticChecklist items={movingSample} />,

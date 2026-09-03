@@ -105,6 +105,25 @@ export const repairsSample: RepairTriageResult = {
   ],
 };
 
+/** 維修：送出分診時會自動建立的事件（狀態一開始是「待處理」）*/
+export const repairsEventDemo = {
+  category: "漏水",
+  createdAtLabel: "2026/09/03 23:40 建立",
+};
+
+/**
+ * 維修：問題解決後回到那筆事件補上的「後續處理」。
+ * 一開始這些欄位都是空的，處理完才回來填、按儲存 —— 累積成「房子病歷」。
+ */
+export const repairsFollowUpDemo = {
+  resolution:
+    "找水電師傅來看，是進水軟管和角凡而老化，兩件一起換新，漏水停止；換好後觀察兩天沒有再滲水。",
+  handledBy: "水電師傅",
+  cost: "600 元",
+  resolvedDate: "2026/09/06",
+  note: "收據已拍照留存，房東同意從下期房租扣抵。",
+};
+
 // ── 我看不懂這份文件 ─────────────────────────────────────────
 
 export const documentsSample: DocumentAnalysisResult = {
@@ -262,10 +281,23 @@ export const calloutsByFeature: Record<FeatureSlug, Callout[]> = {
     { n: 4, blockIndex: 3, label: "直接生出可以複製、貼給房東問的問題。" },
   ],
   repairs: [
-    { n: 1, blockIndex: 0, label: "先判斷有沒有立即危險、該不該馬上停用。" },
-    { n: 2, blockIndex: 1, label: "現在馬上能做的事，照順序列好。" },
-    { n: 3, blockIndex: 3, label: "哪些事不要自己動手，免得越弄越糟或要賠。" },
-    { n: 4, blockIndex: 4, label: "這種狀況該找房東還是自己找師傅，講清楚。" },
+    {
+      n: 1,
+      blockIndex: 0,
+      label: "送出分診就自動存成「待處理」事件，不用另外按儲存，之後在紀錄裡找得到。",
+    },
+    {
+      n: 2,
+      blockIndex: 1,
+      label:
+        "AI 當下的初步分診：有沒有立即危險、第一步做什麼、不要自己動手的事、該找誰。",
+    },
+    {
+      n: 3,
+      blockIndex: 2,
+      label:
+        "問題解決後回到這筆事件，補上處理方式、找誰、費用、日期，累積成你的「房子病歷」。",
+    },
   ],
   documents: [
     { n: 1, blockIndex: 1, label: "把散在條文裡的租期、租金、違約金、修繕責任挑出來。" },
@@ -291,7 +323,10 @@ export const calloutsByFeature: Record<FeatureSlug, Callout[]> = {
 
 export const demoMeta: Record<FeatureSlug, DemoMeta> = {
   renting: { sampleTitle: "範例：中正區 2 房 面公園", note: "貼上租屋廣告文字後的整理結果" },
-  repairs: { sampleTitle: "範例：廚房水槽下方漏水", note: "描述狀況 + 一張現場照片後的初步分診" },
+  repairs: {
+    sampleTitle: "範例：廚房水槽下方漏水",
+    note: "送出即建立「待處理」事件，問題解決後可回來補完，存成房子病歷",
+  },
   documents: { sampleTitle: "範例：住宅租賃契約書", note: "上傳 PDF 後的白話整理" },
   bills: { sampleTitle: "範例：台電電費通知單", note: "上傳帳單後的費用拆解" },
   moving: { sampleTitle: "範例：2026/10/15 搬家", note: "填完搬家情況後產生的客製清單" },
