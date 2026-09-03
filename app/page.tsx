@@ -93,6 +93,12 @@ export default function LandingPage() {
         </p>
         <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
           <StartButton />
+          <Link
+            href="/demo"
+            className="text-sm text-stone-600 underline underline-offset-2 transition-colors hover:text-stone-900 dark:text-stone-300 dark:hover:text-white"
+          >
+            先看範例結果 →
+          </Link>
           <a
             href="#features"
             className="text-sm text-stone-600 underline underline-offset-2 transition-colors hover:text-stone-900 dark:text-stone-300 dark:hover:text-white"
@@ -109,6 +115,12 @@ export default function LandingPage() {
         </h2>
         <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
           目前有六個方向，遇到哪一種就從哪裡開始。
+          <Link
+            href="/demo"
+            className="ml-1 text-stone-600 underline underline-offset-2 transition-colors hover:text-stone-900 dark:text-stone-300 dark:hover:text-white"
+          >
+            看實際範例 →
+          </Link>
         </p>
         <div className="mt-6 divide-y divide-stone-200 dark:divide-stone-800">
           {capabilities.map((c) => (

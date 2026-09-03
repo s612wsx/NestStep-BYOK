@@ -47,6 +47,14 @@ export function ApiKeyNotice({
           </p>
         )
       )}
+      {(needLogin || (loaded && !hasKey)) && (
+        <p>
+          想先看結果長怎樣？{" "}
+          <Link href="/demo" className={linkClass}>
+            看範例
+          </Link>
+        </p>
+      )}
     </div>
   );
 }

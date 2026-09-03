@@ -15,6 +15,16 @@ export default function StartPage() {
         先陪你把問題弄清楚，再一起找到下一步。
       </p>
 
+      <p className="mt-6 text-sm text-stone-500 dark:text-stone-400">
+        想先看看 AI 整理完長什麼樣？
+        <Link
+          href="/demo"
+          className="ml-1 font-medium text-stone-700 underline underline-offset-2 transition-colors hover:text-stone-900 dark:text-stone-200 dark:hover:text-white"
+        >
+          看範例 →
+        </Link>
+      </p>
+
       <h1 className="mt-10 text-2xl font-semibold tracking-tight sm:text-3xl">
         今天卡在哪裡？
       </h1>

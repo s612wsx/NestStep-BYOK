@@ -15,12 +15,18 @@ export default function RepairsPage() {
         </p>
       </PageHeader>
 
-      <div className="mb-6">
+      <div className="mb-6 flex flex-wrap gap-x-4 gap-y-1 text-sm">
         <Link
           href="/repairs/events"
-          className="text-sm text-stone-600 underline underline-offset-2 transition-colors hover:text-stone-900 dark:text-stone-300 dark:hover:text-white"
+          className="text-stone-600 underline underline-offset-2 transition-colors hover:text-stone-900 dark:text-stone-300 dark:hover:text-white"
         >
           查看維修事件紀錄 →
+        </Link>
+        <Link
+          href="/demo?feature=repairs"
+          className="text-stone-600 underline underline-offset-2 transition-colors hover:text-stone-900 dark:text-stone-300 dark:hover:text-white"
+        >
+          看這個功能的範例 →
         </Link>
       </div>
 
